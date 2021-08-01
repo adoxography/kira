@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import { validate, ValidationError, Joi } from 'express-validation';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import State from './state';
 import findMove from './ai';
 import { Player } from './constants';
@@ -34,6 +35,7 @@ const moveValidation = {
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get('/status', validate(statusValidation, {}, { abortEarly: false }), (req, res) => {
   res.status(200).send();
