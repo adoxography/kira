@@ -1,8 +1,6 @@
 import Move from './move';
 import {
-  P1,
-  P2,
-  EMPTY,
+  Player,
   TIE
 } from './constants';
 import { getLines } from './util';
@@ -10,7 +8,7 @@ import { getLines } from './util';
 interface StateConstructor {
   kToWin: number;
   turn: number;
-  board: Array<Array<number | null>>;
+  board: Player[][];
 }
 
 interface StateInitializer {
@@ -26,7 +24,7 @@ class State {
 
   turn: number;
 
-  board: Array<Array<number | null>>;
+  board: Player[][];
 
   constructor({ kToWin, turn, board }: StateConstructor) {
     this.kToWin = kToWin;
@@ -41,10 +39,21 @@ class State {
     width,
     height
   }: StateInitializer): State {
-    const board = new Array(height)
+    const board: Player[][] = new Array(height)
       .fill(0)
       .map(
-        (_row, y) => new Array(width).fill(0).map((_cell, x) => cells[y * width + x])
+        (_row, y) => new Array(width).fill(0).map((_cell, x) => {
+          const cell = cells[y * width + x];
+
+          switch (cell) {
+            case 0:
+              return Player.P1;
+            case 1:
+              return Player.P2;
+            default:
+              return Player.EMPTY;
+          }
+        })
       );
 
     return new State({ kToWin, turn, board });
@@ -58,12 +67,12 @@ class State {
     return this.board.length;
   }
 
-  get children(): Array<Move> {
-    const output: Array<Move> = [];
+  get children(): Move[] {
+    const output: Move[] = [];
 
     this.board.forEach((row, i) => {
       row.forEach((cell, j) => {
-        if (cell === EMPTY) {
+        if (cell === Player.EMPTY) {
           const clone = this.clone();
           clone.advanceTurn();
           clone.board[i][j] = this.turn;
@@ -87,26 +96,23 @@ class State {
         const values = new Set(segment);
 
         if (values.size === 1) {
-          if (values.has(P1)) {
+          if (values.has(Player.P1)) {
             return Infinity;
           }
 
-          if (values.has(P2)) {
+          if (values.has(Player.P2)) {
             return -Infinity;
           }
         }
 
-        if (values.size === 2 && values.has(EMPTY)) {
-          const count = segment.reduce(
-            (m: number, v: number | null) => m + (v !== EMPTY ? 1 : 0),
-            0
-          );
+        if (values.size === 2 && values.has(Player.EMPTY)) {
+          const count = segment.filter((x: Player): boolean => x !== Player.EMPTY).length;
 
-          if (values.has(P1)) {
+          if (values.has(Player.P1)) {
             value += 10 ** (count - 4);
           }
 
-          if (values.has(P2)) {
+          if (values.has(Player.P2)) {
             value -= 10 ** (count - 4);
           }
         }
@@ -116,20 +122,20 @@ class State {
     return value;
   }
 
-  get winner(): number | null {
-    if (!this.board.some(row => row.some(cell => cell === EMPTY))) {
+  get winner(): Player {
+    if (!this.board.some(row => row.some(cell => cell === Player.EMPTY))) {
       return TIE;
     }
 
     if (this.value === Infinity) {
-      return P1;
+      return Player.P1;
     }
 
     if (this.value === -Infinity) {
-      return P2;
+      return Player.P2;
     }
 
-    return null;
+    return Player.EMPTY;
   }
 
   advanceTurn(): void {

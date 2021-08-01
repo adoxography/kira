@@ -1,4 +1,4 @@
-import { P1 } from './constants';
+import { Player } from './constants';
 import { AsyncQueue } from './async';
 import State from './state';
 import Move from './move';
@@ -80,7 +80,7 @@ const alphabeta = async (
  */
 const findMove = async (state: State, timeLimit = 2000): Promise<number> => {
   const queue = new AsyncQueue<ABSearchResult>();
-  const isMaximizing = state.turn === P1;
+  const isMaximizing = state.turn === Player.P1;
   const cmp = isMaximizing ? Math.max : Math.min;
   let bestCell = 0;
   let timeoutReached = false;

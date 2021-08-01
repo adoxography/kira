@@ -1,6 +1,6 @@
 import State from '../src/state';
 import findMove from '../src/ai';
-import { P1, P2, EMPTY } from '../src/constants';
+import { Player } from '../src/constants';
 
 test('it finds the winning move', async () => {
   // _ O _
@@ -8,9 +8,13 @@ test('it finds the winning move', async () => {
   // _ O _
 
   const state = new State({
-    board: [[EMPTY, P2, EMPTY], [P1, P1, EMPTY], [EMPTY, P2, EMPTY]],
+    board: [
+      [Player.EMPTY, Player.P2, Player.EMPTY],
+      [Player.P1, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.P2, Player.EMPTY]
+    ],
     kToWin: 3,
-    turn: P1
+    turn: Player.P1
   });
 
   expect(await findMove(state)).toBe(5);
@@ -22,9 +26,13 @@ test('it blocks winning moves', async () => {
   // O _ X
 
   const state = new State({
-    board: [[P1, P2, EMPTY], [P1, EMPTY, EMPTY], [P2, EMPTY, P1]],
+    board: [
+      [Player.P1, Player.P2, Player.EMPTY],
+      [Player.P1, Player.EMPTY, Player.EMPTY],
+      [Player.P2, Player.EMPTY, Player.P1]
+    ],
     kToWin: 3,
-    turn: P2
+    turn: Player.P2
   });
 
   expect(await findMove(state)).toBe(4);
@@ -36,9 +44,13 @@ test('it finds the only move', async () => {
   // O X X
 
   const state = new State({
-    board: [[P1, P2, EMPTY], [P1, P2, P2], [P2, P1, P1]],
+    board: [
+      [Player.P1, Player.P2, Player.EMPTY],
+      [Player.P1, Player.P2, Player.P2],
+      [Player.P2, Player.P1, Player.P1]
+    ],
     kToWin: 3,
-    turn: P1
+    turn: Player.P1
   });
 
   expect(await findMove(state)).toBe(2);
@@ -50,9 +62,13 @@ test('it finds the winning move in advance', async () => {
   // _ _ X
 
   const state = new State({
-    board: [[P2, EMPTY, EMPTY], [EMPTY, P1, P2], [EMPTY, EMPTY, P1]],
+    board: [
+      [Player.P2, Player.EMPTY, Player.EMPTY],
+      [Player.EMPTY, Player.P1, Player.P2],
+      [Player.EMPTY, Player.EMPTY, Player.P1]
+    ],
     kToWin: 3,
-    turn: P1
+    turn: Player.P1
   });
 
   expect(await findMove(state)).toBe(6);
@@ -61,13 +77,13 @@ test('it finds the winning move in advance', async () => {
 test('it times out gracefully', async () => {
   const state = new State({
     board: [
-      [EMPTY, EMPTY, EMPTY],
-      [EMPTY, EMPTY, EMPTY],
-      [EMPTY, EMPTY, EMPTY],
-      [EMPTY, EMPTY, EMPTY]
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY]
     ],
     kToWin: 4,
-    turn: P1
+    turn: Player.P1
   });
 
   const startTime = Date.now();

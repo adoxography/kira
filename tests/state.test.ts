@@ -1,38 +1,33 @@
 import State from '../src/state';
 import Move from '../src/move';
-import {
-  P1,
-  P2,
-  EMPTY,
-  TIE
-} from '../src/constants';
+import { Player, TIE } from '../src/constants';
 
 test('state can be generated from parameters', () => {
   const state = State.fromParams({
     width: 4,
     height: 3,
-    cells: [P1, EMPTY, P1, P1, P2, P1, P2, EMPTY, EMPTY, P2, EMPTY, P2],
+    cells: [0, null, 0, 0, 1, 0, 1, null, null, 1, null, 1],
     kToWin: 3,
-    turn: P1
+    turn: Player.P1
   });
 
   expect(state.kToWin).toBe(3);
-  expect(state.turn).toBe(P1);
+  expect(state.turn).toBe(Player.P1);
   expect(state.board).toEqual([
-    [P1, EMPTY, P1, P1],
-    [P2, P1, P2, EMPTY],
-    [EMPTY, P2, EMPTY, P2]
+    [Player.P1, Player.EMPTY, Player.P1, Player.P1],
+    [Player.P2, Player.P1, Player.P2, Player.EMPTY],
+    [Player.EMPTY, Player.P2, Player.EMPTY, Player.P2]
   ]);
 });
 
 test('state has a width', () => {
   const state = new State({
-    turn: P1,
+    turn: Player.P1,
     kToWin: 3,
     board: [
-      [P1, EMPTY, P1, P1],
-      [P2, P1, P2, EMPTY],
-      [EMPTY, P2, EMPTY, P2]
+      [Player.P1, Player.EMPTY, Player.P1, Player.P1],
+      [Player.P2, Player.P1, Player.P2, Player.EMPTY],
+      [Player.EMPTY, Player.P2, Player.EMPTY, Player.P2]
     ]
   });
 
@@ -41,12 +36,12 @@ test('state has a width', () => {
 
 test('state has a height', () => {
   const state = new State({
-    turn: P1,
+    turn: Player.P1,
     kToWin: 3,
     board: [
-      [P1, EMPTY, P1, P1],
-      [P2, P1, P2, EMPTY],
-      [EMPTY, P2, EMPTY, P2]
+      [Player.P1, Player.EMPTY, Player.P1, Player.P1],
+      [Player.P2, Player.P1, Player.P2, Player.EMPTY],
+      [Player.EMPTY, Player.P2, Player.EMPTY, Player.P2]
     ]
   });
 
@@ -55,60 +50,60 @@ test('state has a height', () => {
 
 test('state can be cloned', () => {
   const state = new State({
-    board: [[P1, P2], [P2, P2]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P2]],
     kToWin: 3,
-    turn: P1
+    turn: Player.P1
   });
 
   const clone = state.clone();
 
   expect(clone.kToWin).toBe(3);
-  expect(clone.turn).toBe(P1);
-  expect(clone.board).toEqual([[P1, P2], [P2, P2]]);
+  expect(clone.turn).toBe(Player.P1);
+  expect(clone.board).toEqual([[Player.P1, Player.P2], [Player.P2, Player.P2]]);
   expect(clone).not.toBe(state);
 });
 
 test('cloning state deep clones its board', () => {
   const state = new State({
-    turn: P1,
+    turn: Player.P1,
     kToWin: 3,
-    board: [[P1, P2], [P2, P2]]
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P2]]
   });
 
   const clone = state.clone();
 
-  state.board[0][0] = EMPTY;
+  state.board[0][0] = Player.EMPTY;
 
-  expect(clone.board[0][0]).toBe(P1);
+  expect(clone.board[0][0]).toBe(Player.P1);
 });
 
-test('state can advance its turn from P1 to P2', () => {
-  const state = new State({ turn: P1, kToWin: 1, board: [] });
+test('state can advance its turn from Player.P1 to Player.P2', () => {
+  const state = new State({ turn: Player.P1, kToWin: 1, board: [] });
 
   state.advanceTurn();
 
-  expect(state.turn).toBe(P2);
+  expect(state.turn).toBe(Player.P2);
 });
 
-test('state can advance its turn from P2 to P1', () => {
-  const state = new State({ turn: P2, kToWin: 1, board: [] });
+test('state can advance its turn from Player.P2 to Player.P1', () => {
+  const state = new State({ turn: Player.P2, kToWin: 1, board: [] });
 
   state.advanceTurn();
 
-  expect(state.turn).toBe(P1);
+  expect(state.turn).toBe(Player.P1);
 });
 
 test('states can check for equality', () => {
   const state1 = new State({
-    board: [[P1, P2], [P2, P1]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P1]],
     kToWin: 3,
-    turn: P2
+    turn: Player.P2
   });
 
   const state2 = new State({
-    board: [[P1, P2], [P2, P1]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P1]],
     kToWin: 3,
-    turn: P2
+    turn: Player.P2
   });
 
   expect(state1).toEqual(state2);
@@ -116,15 +111,15 @@ test('states can check for equality', () => {
 
 test('states are unequal if their turns differ', () => {
   const state1 = new State({
-    board: [[P1, P2], [P2, P1]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P1]],
     kToWin: 3,
-    turn: P2
+    turn: Player.P2
   });
 
   const state2 = new State({
-    board: [[P1, P2], [P2, P1]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P1]],
     kToWin: 3,
-    turn: P1
+    turn: Player.P1
   });
 
   expect(state1).not.toEqual(state2);
@@ -132,15 +127,15 @@ test('states are unequal if their turns differ', () => {
 
 test('states are unequal if their Ks differ', () => {
   const state1 = new State({
-    board: [[P1, P2], [P2, P1]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P1]],
     kToWin: 3,
-    turn: P2
+    turn: Player.P2
   });
 
   const state2 = new State({
-    board: [[P1, P2], [P2, P1]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P1]],
     kToWin: 4,
-    turn: P2
+    turn: Player.P2
   });
 
   expect(state1).not.toEqual(state2);
@@ -148,15 +143,15 @@ test('states are unequal if their Ks differ', () => {
 
 test('states are unequal if their boards differ', () => {
   const state1 = new State({
-    board: [[P1, P2], [P2, P2]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P2]],
     kToWin: 3,
-    turn: P2
+    turn: Player.P2
   });
 
   const state2 = new State({
-    board: [[P1, P2], [P2, P1]],
+    board: [[Player.P1, Player.P2], [Player.P2, Player.P1]],
     kToWin: 3,
-    turn: P2
+    turn: Player.P2
   });
 
   expect(state1).not.toEqual(state2);
@@ -164,32 +159,42 @@ test('states are unequal if their boards differ', () => {
 
 test('states can generate children', () => {
   const state = new State({
-    board: [[P1, EMPTY, P1], [P2, P1, P2], [EMPTY, P2, EMPTY]],
+    board: [
+      [Player.P1, Player.EMPTY, Player.P1],
+      [Player.P2, Player.P1, Player.P2],
+      [Player.EMPTY, Player.P2, Player.EMPTY]
+    ],
     kToWin: 3,
-    turn: P1
+    turn: Player.P1
   });
 
   const target = [
     new Move(1, new State({
       board: [
-        [P1, P1, P1], [P2, P1, P2], [EMPTY, P2, EMPTY]
+        [Player.P1, Player.P1, Player.P1],
+        [Player.P2, Player.P1, Player.P2],
+        [Player.EMPTY, Player.P2, Player.EMPTY]
       ],
       kToWin: 3,
-      turn: P2
+      turn: Player.P2
     })),
     new Move(6, new State({
       board: [
-        [P1, EMPTY, P1], [P2, P1, P2], [P1, P2, EMPTY]
+        [Player.P1, Player.EMPTY, Player.P1],
+        [Player.P2, Player.P1, Player.P2],
+        [Player.P1, Player.P2, Player.EMPTY]
       ],
       kToWin: 3,
-      turn: P2
+      turn: Player.P2
     })),
     new Move(8, new State({
       board: [
-        [P1, EMPTY, P1], [P2, P1, P2], [EMPTY, P2, P1]
+        [Player.P1, Player.EMPTY, Player.P1],
+        [Player.P2, Player.P1, Player.P2],
+        [Player.EMPTY, Player.P2, Player.P1]
       ],
       kToWin: 3,
-      turn: P2
+      turn: Player.P2
     }))
   ];
 
@@ -199,66 +204,86 @@ test('states can generate children', () => {
 test.each([
   [
     new State({
-      board: [[P1, P1, P1], [EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY]],
+      board: [
+        [Player.P1, Player.P1, Player.P1],
+        [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+        [Player.EMPTY, Player.EMPTY, Player.EMPTY]
+      ],
       kToWin: 3,
-      turn: P1
+      turn: Player.P1
     }),
     Infinity
   ],
   [
     new State({
-      board: [[P2, P2, P2], [EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY]],
+      board: [
+        [Player.P2, Player.P2, Player.P2],
+        [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+        [Player.EMPTY, Player.EMPTY, Player.EMPTY]
+      ],
       kToWin: 3,
-      turn: P1
+      turn: Player.P1
     }),
     -Infinity
   ],
   [
     new State({
-      board: [[P2, P2, P1], [EMPTY, EMPTY, EMPTY], [EMPTY, EMPTY, EMPTY]],
+      board: [
+        [Player.P2, Player.P2, Player.P1],
+        [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+        [Player.EMPTY, Player.EMPTY, Player.EMPTY]
+      ],
       kToWin: 3,
-      turn: P1
+      turn: Player.P1
     }),
     -0.001
   ],
   [
     new State({
-      board: [[P2, P2, 0], [EMPTY, P1, EMPTY], [EMPTY, EMPTY, EMPTY]],
+      board: [
+        [Player.P2, Player.P2, 0],
+        [Player.EMPTY, Player.P1, Player.EMPTY],
+        [Player.EMPTY, Player.EMPTY, Player.EMPTY]
+      ],
       kToWin: 3,
-      turn: P1
+      turn: Player.P1
     }),
     0.011
   ],
   [
     new State({
       board: [
-        [P1, P1, EMPTY, P1],
-        [P2, P1, EMPTY, EMPTY],
-        [P2, EMPTY, EMPTY, EMPTY],
-        [EMPTY, EMPTY, P2, EMPTY]
+        [Player.P1, Player.P1, Player.EMPTY, Player.P1],
+        [Player.P2, Player.P1, Player.EMPTY, Player.EMPTY],
+        [Player.P2, Player.EMPTY, Player.EMPTY, Player.EMPTY],
+        [Player.EMPTY, Player.EMPTY, Player.P2, Player.EMPTY]
       ],
       kToWin: 4,
-      turn: P2
+      turn: Player.P2
     }),
     0.119
   ],
   [
     new State({
       board: ([
-        [P1, P1, EMPTY, P1],
-        [P2, P1, EMPTY, P2],
-        [P2, EMPTY, EMPTY, EMPTY]
+        [Player.P1, Player.P1, Player.EMPTY, Player.P1],
+        [Player.P2, Player.P1, Player.EMPTY, Player.P2],
+        [Player.P2, Player.EMPTY, Player.EMPTY, Player.EMPTY]
       ]),
       kToWin: 4,
-      turn: P2
+      turn: Player.P2
     }),
     0.099
   ],
   [
     new State({
-      board: ([[P1, P1, P2], [P2, P1, P1], [P1, P2, P2]]),
+      board: ([
+        [Player.P1, Player.P1, Player.P2],
+        [Player.P2, Player.P1, Player.P1],
+        [Player.P1, Player.P2, Player.P2]
+      ]),
       kToWin: 3,
-      turn: P1
+      turn: Player.P1
     }),
     0
   ]
@@ -268,71 +293,123 @@ test.each([
 
 test.each([
   [
-    [[EMPTY, EMPTY, EMPTY], [P1, P1, P1], [EMPTY, EMPTY, EMPTY]],
+    [
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+      [Player.P1, Player.P1, Player.P1],
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY]
+    ],
     3,
-    P1
+    Player.P1
   ],
   [
-    [[EMPTY, EMPTY, EMPTY], [P2, P2, P2], [EMPTY, EMPTY, EMPTY]],
+    [
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+      [Player.P2, Player.P2, Player.P2],
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY]
+    ],
     3,
-    P2
+    Player.P2
   ],
   [
-    [[EMPTY, EMPTY, EMPTY], [P1, P1, P2], [EMPTY, EMPTY, EMPTY]],
+    [
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+      [Player.P1, Player.P1, Player.P2],
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY]
+    ],
     2,
-    P1
+    Player.P1
   ],
   [
-    [[EMPTY, EMPTY, EMPTY], [P1, P1, P2], [EMPTY, EMPTY, EMPTY]],
+    [
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY],
+      [Player.P1, Player.P1, Player.P2],
+      [Player.EMPTY, Player.EMPTY, Player.EMPTY]
+    ],
     3,
-    null
+    Player.EMPTY
   ],
   [
-    [[EMPTY, P1, EMPTY], [EMPTY, P1, EMPTY], [EMPTY, P1, EMPTY]],
+    [
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.P1, Player.EMPTY]
+    ],
     3,
-    P1
+    Player.P1
   ],
   [
-    [[EMPTY, P2, EMPTY], [EMPTY, P2, EMPTY], [EMPTY, P2, EMPTY]],
+    [
+      [Player.EMPTY, Player.P2, Player.EMPTY],
+      [Player.EMPTY, Player.P2, Player.EMPTY],
+      [Player.EMPTY, Player.P2, Player.EMPTY]
+    ],
     3,
-    P2
+    Player.P2
   ],
   [
-    [[EMPTY, P1, EMPTY], [EMPTY, P1, EMPTY], [EMPTY, P2, EMPTY]],
+    [
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.P2, Player.EMPTY]
+    ],
     2,
-    P1
+    Player.P1
   ],
   [
-    [[EMPTY, P1, EMPTY], [EMPTY, P1, EMPTY], [EMPTY, P2, EMPTY]],
+    [
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.P2, Player.EMPTY]
+    ],
     3,
-    null
+    Player.EMPTY
   ],
   [
-    [[P1, EMPTY, EMPTY], [EMPTY, P1, EMPTY], [EMPTY, EMPTY, P1]],
+    [
+      [Player.P1, Player.EMPTY, Player.EMPTY],
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.EMPTY, Player.P1]
+    ],
     3,
-    P1
+    Player.P1
   ],
   [
-    [[P2, EMPTY, EMPTY], [EMPTY, P2, EMPTY], [EMPTY, EMPTY, P2]],
+    [
+      [Player.P2, Player.EMPTY, Player.EMPTY],
+      [Player.EMPTY, Player.P2, Player.EMPTY],
+      [Player.EMPTY, Player.EMPTY, Player.P2]
+    ],
     3,
-    P2
+    Player.P2
   ],
   [
-    [[P1, EMPTY, EMPTY], [EMPTY, P1, EMPTY], [EMPTY, EMPTY, P2]],
+    [
+      [Player.P1, Player.EMPTY, Player.EMPTY],
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.EMPTY, Player.P2]
+    ],
     2,
-    P1
+    Player.P1
   ],
   [
-    [[P1, EMPTY, EMPTY], [EMPTY, P1, EMPTY], [EMPTY, EMPTY, P2]],
+    [
+      [Player.P1, Player.EMPTY, Player.EMPTY],
+      [Player.EMPTY, Player.P1, Player.EMPTY],
+      [Player.EMPTY, Player.EMPTY, Player.P2]
+    ],
     3,
-    EMPTY
+    Player.EMPTY
   ],
   [
-    [[P1, P1, P2], [P2, P2, P1], [P1, P1, P2]],
+    [
+      [Player.P1, Player.P1, Player.P2],
+      [Player.P2, Player.P2, Player.P1],
+      [Player.P1, Player.P1, Player.P2]
+    ],
     3,
     TIE
   ]
 ])('states find the winner', (board, kToWin, expected) => {
-  const state = new State({ board, kToWin, turn: P1 });
+  const state = new State({ board, kToWin, turn: Player.P1 });
   expect(state.winner).toBe(expected);
 });

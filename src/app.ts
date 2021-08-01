@@ -3,7 +3,7 @@ import { validate, ValidationError, Joi } from 'express-validation';
 import bodyParser from 'body-parser';
 import State from './state';
 import findMove from './ai';
-import { EMPTY, P1, P2 } from './constants';
+import { Player } from './constants';
 
 const statusValidation = {
   query: Joi.object({
@@ -21,14 +21,14 @@ const moveValidation = {
     cells: Joi.array()
       .length(Joi.expression('{{width * height}}'))
       .items(
-        Joi.valid(EMPTY),
-        Joi.valid(P1),
-        Joi.valid(P2)
+        Joi.valid(null),
+        Joi.valid(Player.P1),
+        Joi.valid(Player.P2)
       )
       .required(),
     k: Joi.number().integer().required(),
     timePerMove: Joi.number().min(1).required(),
-    turn: Joi.valid(P1, P2).required()
+    turn: Joi.valid(Player.P1, Player.P2).required()
   })
 };
 

@@ -1,12 +1,12 @@
-type Line = Array<number | null>;
+import { Player } from './constants';
 
 /**
  * Generates all columns from a 2D array
  *
- * @param {Array<Line>} arr The array to generate from
- * @returns {Array<number | null>} The columns of the array
+ * @param {Player[][]} arr The array to generate from
+ * @returns {Player[][]} The columns of the array
  */
-export const getColumns = (arr: Array<Line>): Array<Line> => {
+export const getColumns = (arr: Player[][]): Player[][] => {
   const width = arr[0].length;
 
   const cols = new Array(width).fill(0).map((_, i) => arr.map(row => row[i]));
@@ -17,12 +17,12 @@ export const getColumns = (arr: Array<Line>): Array<Line> => {
 /**
  * Generates diagonals from a 2D array
  *
- * @param {Array<Line>} arr The array to generate from
+ * @param {Player[][]} arr The array to generate from
  * @param {boolean} bottomToTop If true, generates diagonals bottom to top. If
  *                              false, generates diagonals top to bottom.
- * @returns {Array<Line>} The diagonals from the array
+ * @returns {Player[][]} The diagonals from the array
  */
-export const getDiagonals = (arr: Array<Line>, bottomToTop = false): Array<Line> => {
+export const getDiagonals = (arr: Player[][], bottomToTop = false): Player[][] => {
   const height = arr.length;
   const width = arr[0].length;
   const maxSize = Math.max(width, height);
@@ -47,10 +47,10 @@ export const getDiagonals = (arr: Array<Line>, bottomToTop = false): Array<Line>
 /**
  * Generates all lines in a 2D array
  *
- * @param {Array<Line>} arr The array to generate from
- * @returns {Array<Line>} The lines in the array
+ * @param {Player[][]} arr The array to generate from
+ * @returns {Player[][]} The lines in the array
  */
-export const getLines = (arr: Array<Line>): Array<Line> => [
+export const getLines = (arr: Player[][]): Player[][] => [
   ...arr,
   ...getColumns(arr),
   ...getDiagonals(arr),
