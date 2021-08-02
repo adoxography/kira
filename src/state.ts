@@ -26,6 +26,8 @@ class State {
 
   board: Player[][];
 
+  private cachedValue: number | null = null;
+
   constructor({ kToWin, turn, board }: StateConstructor) {
     this.kToWin = kToWin;
     this.turn = turn;
@@ -88,6 +90,14 @@ class State {
   }
 
   get value(): number {
+    if (this.cachedValue === null) {
+      this.cachedValue = this.calculateValue();
+    }
+
+    return this.cachedValue;
+  }
+
+  calculateValue(): number {
     let value = 0;
 
     for (const line of getLines(this.board)) {
