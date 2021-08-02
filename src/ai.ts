@@ -7,7 +7,7 @@ class Timeout extends Error {}
 
 type ABSearchResult = {
   value: number,
-  winner: number | null
+  winner: Player
 };
 
 /**
@@ -29,7 +29,7 @@ const alphabeta = async (
   initialAlpha = -Infinity,
   initialBeta = Infinity
 ): Promise<ABSearchResult> => {
-  if (depth === 0 || node.state.winner !== null) {
+  if (depth === 0 || node.state.winner !== Player.EMPTY) {
     return {
       value: node.state.value * (depth + 1),
       winner: node.state.winner
@@ -67,7 +67,7 @@ const alphabeta = async (
     }
   }
 
-  return { value, winner: null };
+  return { value, winner: Player.EMPTY };
 };
 
 /**
@@ -82,7 +82,7 @@ const findMove = async (state: State, timeLimit = 2000): Promise<number> => {
   const queue = new AsyncQueue<ABSearchResult>();
   const isMaximizing = state.turn === Player.P1;
   const cmp = isMaximizing ? Math.max : Math.min;
-  let bestCell = 0;
+  let bestCell : number | null = null;
   let timeoutReached = false;
 
   const timeout = setTimeout(() => {
@@ -91,8 +91,8 @@ const findMove = async (state: State, timeLimit = 2000): Promise<number> => {
   }, timeLimit - 100);
 
   for (let depth = 1; !timeoutReached; depth += 1) {
-    let bestMove = null;
-    let bestValue = null;
+    let bestMove: Move | null = null;
+    let bestValue: number | null = null;
     let childrenPossible = false;
 
     for (const move of state.children) {
@@ -104,12 +104,13 @@ const findMove = async (state: State, timeLimit = 2000): Promise<number> => {
           !isMaximizing,
           queue
         ));
+
         if (bestValue === null || cmp(bestValue, value) !== bestValue) {
           bestMove = move;
           bestValue = value;
         }
 
-        if (winner === null) {
+        if (winner === Player.EMPTY) {
           childrenPossible = true;
         }
       } catch (e) {
@@ -135,7 +136,7 @@ const findMove = async (state: State, timeLimit = 2000): Promise<number> => {
   }
 
   clearTimeout(timeout);
-  return bestCell;
+  return bestCell === null ? 0 : bestCell;
 };
 
 export default findMove;

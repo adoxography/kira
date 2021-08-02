@@ -90,6 +90,9 @@ test('it times out gracefully', async () => {
 
   const move = await findMove(state, 3000);
 
-  expect(Date.now()).toBeLessThan(startTime + 3000);
+  const endTime = Date.now();
+
+  expect(endTime).toBeGreaterThan(startTime + 2000);
+  expect(endTime).toBeLessThan(startTime + 3000);
   expect(move).toBe(0);
 });
