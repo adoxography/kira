@@ -1,5 +1,5 @@
 import { Player } from './constants';
-import { AsyncQueue } from './async';
+import AsyncQueue from './async/queue';
 import State from './state';
 import Move from './move';
 

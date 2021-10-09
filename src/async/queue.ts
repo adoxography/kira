@@ -7,27 +7,29 @@ class AsyncQueue<T> {
     this.deferredObjects = [];
   }
 
+  /**
+   * Pushes a new deferred task onto the queue
+   *
+   * @param {() => Promise} task An asynchronous task to run
+   * @returns {Promise} A promise that resolves to the resolution of the task
+   */
+  push(task: () => Promise<T>): Promise<T> {
+    const deferred = new Deferred<T>(task);
+    this.deferredObjects.push(deferred);
+    return deferred.promise;
+  }
+
+  /**
+   * Clears the queue and destroys any existing tasks.
+   *
+   * @param {?Error} signal An optional signal to pass to the destroyed tasks
+   */
   clear(signal: Error | null = null): void {
     this.deferredObjects.forEach(deferred => {
-      if (deferred.reject) {
-        deferred.reject(signal);
-      }
-
-      if (deferred.timeout) {
-        clearTimeout(deferred.timeout);
-      }
+      deferred.destroy(signal);
     });
 
     this.deferredObjects = [];
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  push(task: () => any): Promise<T> {
-    const deferred = new Deferred<T>();
-    deferred.timeout = setTimeout(() => deferred.resolve && deferred.resolve(task()));
-
-    this.deferredObjects.push(deferred);
-    return deferred.promise;
   }
 }
 

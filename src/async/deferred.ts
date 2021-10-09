@@ -5,17 +5,42 @@ class Deferred<T> {
 
   reject: ((value: Error | null) => void) | null;
 
-  resolve: ((value: T) => void) | null;
+  alive: boolean;
 
-  constructor() {
-    this.timeout = null;
+  constructor(task: () => Promise<T>) {
     this.reject = null;
-    this.resolve = null;
+    this.timeout = null;
+    this.alive = true;
 
     this.promise = new Promise((resolve, reject) => {
       this.reject = reject;
-      this.resolve = resolve;
+      this.timeout = setTimeout(async () => {
+        try {
+          resolve(await task());
+        } catch (error) {
+          reject(error);
+        } finally {
+          this.alive = false;
+        }
+      });
     });
+  }
+
+  /**
+   * Destroys the task and clears the timeout
+   *
+   * @param {?Error} signal An optional message to throw
+   */
+  destroy(signal: Error | null): void {
+    if (!this.alive) {
+      return;
+    }
+
+    this.reject?.(signal);
+
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
   }
 }
 
