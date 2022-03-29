@@ -9,6 +9,7 @@
     },
     "extends": [
         "airbnb-typescript/base",
+        "plugin:import/recommended",
         "plugin:jest/recommended",
         "plugin:jsdoc/recommended",
         "plugin:@typescript-eslint/recommended"
