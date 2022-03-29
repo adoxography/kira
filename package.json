@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "yarn build && node dist/server.js",
+    "start": "node dist/server.js",
+    "build-and-start": "yarn build && node dist/server.js",
     "test": "jest",
     "lint": "eslint src tests"
   },
